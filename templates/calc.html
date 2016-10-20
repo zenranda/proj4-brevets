@@ -33,13 +33,6 @@
 <h1>ACP Brevet Times</h1>
   <p>This worksheet is for ACP-sanctioned brevets between 200 and 1000 kilometers</p>
 
-  <!--
-  -- If there are any warnings or other messages from a prior
-  -- request to the server, 
-  -- they appear above the rest of the content, just until the next 
-  -- action.  (This is only on request/response transactions that
-  -- result in regenerating the page, not on every xmlhttp request.) 
-  -->
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}
@@ -63,19 +56,15 @@
     <option value="600">600km</option>
     <option value="1000">1000km</option>
   </select>
-  </div> <!-- columns 1--4  -->
+  </div>
   <div class="col-md-6">
     <label>Begins at</label>
     <input type=date name="begin_date" id="begin_date" value="2017-01-01" />
     <input type=time name="begin_time" id="begin_time" value="00:00"    />
-  </div> <!-- columns 5-10 -->
-  </div> <!-- row -->
+  </div> 
+  </div> 
 
-  <br />  <!-- Cosmetic -- a little vertical space -->
-  <!-- Although we do not use tables for general page layout, they are
-       appropriate for something that really is a table, like this
-       one.  We allocate it the full 12 columns of the bootstrap grid.
-  -->
+  <br /> 
   <div class="row">
   <div class="col-md-12"> 
   <table class="control_time_table">
@@ -126,8 +115,9 @@
     var km = control.find("input[name='km']").val();
     var open_time_field = control.find("input[name='open']");
     var close_time_field = control.find("input[name='close']");
-    
-    $.getJSON(TIME_CALC_URL, { km: km }, 
+    var begin_date = control.find("input[name='begin_date']").val();
+
+    $.getJSON(TIME_CALC_URL, { km: km, begin_date : begin_date }, 
       // response handler
       function(data) {
          var times = data.result;
@@ -156,7 +146,7 @@
 
       $('input[name="km"]').change(
          function() {
-             var km = parseFloat($(this).val());
+             var km = parseInt($(this).val());
              var miles = (0.621371 * km).toFixed(1) ;
              console.log("Converted " + km + " km to " + miles + " miles");
              var control_entry = $(this).parents(".control")
@@ -165,6 +155,7 @@
              // Then calculate times for this entry
              calc_times(control_entry);
           });
+
 
      });   // end of what we do on document ready
 
