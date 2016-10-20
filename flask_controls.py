@@ -64,9 +64,13 @@ def _calc_times():
   """
   app.logger.debug("Got a JSON request");
   km = request.args.get('km', 0, type=int)
-  print(km)
-  tm = request.args.get('begin_date', 0, type=int)
+  tm = request.args.get('begin_date', 0, type=str)
+  hs = request.args.get('begin_time', 0, type=str)
   print(tm)
+  tm = arrow.get(tm + hs)
+  print(tm)
+  td = request.args.get('total_dist', 0, type=str)
+  print(td)
   #FIXME: These probably aren't the right open and close times
   open_time = acp_times.open_time(km, 200, arrow.now().isoformat)
   close_time = acp_times.close_time(km, 200, arrow.now().isoformat)
@@ -88,4 +92,14 @@ else:
     # one instance for concurrent service.
     #FIXME:  Debug cgi interface 
     app.debug=False
+
+
+
+
+
+
+
+
+
+
 
