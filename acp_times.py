@@ -29,7 +29,13 @@ def open_time( control_dist_km, brevet_dist_km, brevet_start_time ):
        An ISO 8601 format date string indicating the control open time.
        This will be in the same time zone as the brevet start time.
     """
-    return arrow.now().isoformat()
+    maxspeed = { range(1,200) :  34, range(200, 400) : 32, range(400, 600) : 30, range(600,1000) : 28, range(1000, 1300) : 26 }
+    
+    open_time = arrow.get(brevet_start_time)                
+    hours = control_dist_km // maxspeed['control_dist_km']
+    open_time.replace(hour=+hours)
+        
+    return arrow.now().isoformat()		#todo: change this to return the passed-in values rather than now
 
 def close_time( control_dist_km, brevet_dist_km, brevet_start_time ):
     """
@@ -44,6 +50,12 @@ def close_time( control_dist_km, brevet_dist_km, brevet_start_time ):
        An ISO 8601 format date string indicating the control close time.
        This will be in the same time zone as the brevet start time.
     """
+    minspeed = { range(1,600) : 15, range(600,1000) : 11.428, range(1000, 1300) : 13.333 }
+    
+    open_time = arrow.get(brevet_start_time)                
+    hours = control_dist_km // minspeed['control_dist_km']
+    open_time.replace(hour=+hours)
+        
     return arrow.now().isoformat()
 
 

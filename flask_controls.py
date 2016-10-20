@@ -33,7 +33,7 @@ app.secret_key = CONFIG.secret_key  # Should allow using session variables
 
 ###
 # Pages
-###
+###s
 
 @app.route("/")
 @app.route("/index")
@@ -64,6 +64,9 @@ def _calc_times():
   """
   app.logger.debug("Got a JSON request");
   km = request.args.get('km', 0, type=int)
+  print(km)
+  tm = request.args.get('begin_date', 0, type=int)
+  print(tm)
   #FIXME: These probably aren't the right open and close times
   open_time = acp_times.open_time(km, 200, arrow.now().isoformat)
   close_time = acp_times.close_time(km, 200, arrow.now().isoformat)
