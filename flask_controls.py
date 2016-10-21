@@ -66,14 +66,14 @@ def _calc_times():
   km = request.args.get('km', 0, type=int)
   tm = request.args.get('begin_date', 0, type=str)
   hs = request.args.get('begin_time', 0, type=str)
+  print(hs)
+  tm = arrow.get(tm + ' ' + hs, 'YYYY-MM-DD HH:mm')
   print(tm)
-  tm = arrow.get(tm + hs)
-  print(tm)
-  td = request.args.get('total_dist', 0, type=str)
+  td = request.args.get('total_dist', 0, type=int)
   print(td)
   #FIXME: These probably aren't the right open and close times
-  open_time = acp_times.open_time(km, 200, arrow.now().isoformat)
-  close_time = acp_times.close_time(km, 200, arrow.now().isoformat)
+  open_time = acp_times.open_time(km, td, tm.isoformat)
+  close_time = acp_times.close_time(km, td, tm.isoformat)
   result={ "open": open_time, "close": close_time }
   return jsonify(result=result)
 
