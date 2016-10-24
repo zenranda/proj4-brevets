@@ -30,43 +30,44 @@ def open_time( control_dist_km, brevet_dist_km, brevet_start_time ):
        An ISO 8601 format date string indicating the control open time.
        This will be in the same time zone as the brevet start time.
     """
-    #TODO: fix time zone stuff, introduce actual logic for adding hours/minutes
-    #perhaps a bunch of mod ops, where days = hours %24, or somethings
-    if control_dist_km > brevet_dist_km:	 #error case, if the checkpoint distance is invalid
-        return arrow.now().isoformat()           #get better feedback though
+    if control_dist_km > (brevet_dist_km * 1.2):	                #error case, if the checkpoint distance is too far
+        print("Error: controle distance > brevet distance + 20%.")  #this clause comes from the official time calculator
+        return None
+
+    if brevet_dist_km < control_dist_km < (brevet_dist_km *1.2):    #controles a little past the overall distance are counted as being on that distance
+        control_dist_km = brevet_dist_km
+
+    if control_dist_km < 0:
+        print("Error: negative controle distance.")
+        return None
         
     s = control_dist_km    
     threshhold = 0
     hours = 0
-    vals = [[34, 200],[32, 200], [30, 200], [28, 400], [26, 300]]
+    vals = [[34, 200],[32, 200], [30, 200], [28, 400], [26, 300]]#indices are [max speed, distance max speed is applicable]
 
-    while s > 0:
-        if s > vals[threshhold][1]:     # is this the right reference?
-            s -= vals[threshhold][1]
-            hours += vals[threshhold][1]/(vals[threshhold][0])
-            threshhold += 1
-        else:
+    while s > 0:                                                 #method for calculating open time
+        if s > vals[threshhold][1]:                              #in short, it takes the first 200 km and divides them by the max speed
+            s -= vals[threshhold][1]                             #then it takes those hours and adds them to an overall hour count
+            hours += vals[threshhold][1]/(vals[threshhold][0])   #then it moves to the next max speed/distance threshold and repeats
+            threshhold += 1                                      #this is because each chunk of the distance has its own max speed
+        else:                                                    #and we need to concatenate the distance we travel per chunk/that chunk's max speed
             hours += s/(vals[threshhold][0])
             s = 0
 
-    mins = hours * 60
-    hrs = 0
+    mins = hours * 60                                            #gets minutes from the final hour count
+    hrs = 0                                                      #then converts them back into hours + remainder minutes
     while mins >= 60:
         hrs += 1
         mins = mins - 60
     mins = mins // 1
     
-    print("Thus the checkpoint opens in " + str(open_time) + " hours")
     start_time = arrow.get(brevet_start_time())
     start_time = start_time.replace(hours=+hrs)
     start_time = start_time.replace(minutes=+mins)
-    start_time = start_time.replace(hours=+8)
 
-    print("Start time is: " + str(start_time))
+    return start_time.isoformat()
 
-    #no matter what it's shifting the date 8 hours BACkwards
-
-    return start_time.isoformat()		#todo: change this to return the passed-in values rather than now
 
 def close_time( control_dist_km, brevet_dist_km, brevet_start_time ):
     """
@@ -81,19 +82,23 @@ def close_time( control_dist_km, brevet_dist_km, brevet_start_time ):
        An ISO 8601 format date string indicating the control close time.
        This will be in the same time zone as the brevet start time.
     """
-    if control_dist_km > brevet_dist_km:
-        return arrow.now().isoformat()
+    if control_dist_km > (brevet_dist_km * 1.2):	                #error case, if the checkpoint distance is too far
+        return None
 
-    cloT = [range(1,600), range(600, 1000), range(1000,1300)]
-    speedVals = [15, 11.428, 13.333]
-    s = control_dist_km    
+    if brevet_dist_km < control_dist_km < (brevet_dist_km *1.2):
+        control_dist_km = brevet_dist_km
+
+    if control_dist_km < 0:
+        return None
+ 
+    s = control_dist_km
+    hours = 0    
     threshhold = 0
-    hours = 0
     vals = [[15, 600],[11.428, 400], [13.333, 300]]
 
-    while s > 0:
-        if s > vals[threshhold][1]:
-            s -= vals[threshhold][1]
+    while s > 0:                                                    #method for getting open time
+        if s > vals[threshhold][1]:                                 #logic the same as open_time()
+            s -= vals[threshhold][1]                                #only real difference is closing times have fewer, larger chunks
             hours += vals[threshhold][1]/(vals[threshhold][0])
             threshhold += 1
         else:
@@ -106,30 +111,12 @@ def close_time( control_dist_km, brevet_dist_km, brevet_start_time ):
         hrs += 1
         mins = mins - 60
     mins = mins // 1
+
     end_time = arrow.get(brevet_start_time())
     end_time = end_time.replace(hours=+hrs)
     end_time = end_time.replace(minutes=+mins)
-    end_time = end_time.replace(hours=+8)
-
 
     return end_time.isoformat()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
