@@ -63,16 +63,11 @@ def _calc_times():
   Expects one URL-encoded argument, the number of miles. 
   """
   app.logger.debug("Got a JSON request");
-  km = request.args.get('km', 0, type=int)
+  km = request.args.get('km', 0, type=float)         #pulled values from the web form
   tm = request.args.get('begin_date', 0, type=str)
   hs = request.args.get('begin_time', 0, type=str)
-  print(hs)
-  tm = arrow.get(tm + ' ' + hs, 'YYYY-MM-DD HH:mm')
-  #tm = tm.to('local')
-  print(tm)
+  tm = arrow.get(tm + ' ' + hs, 'YYYY-MM-DD HH:mm').replace(tzinfo=tz.tzlocal())  #puts the time in the current timezone
   td = request.args.get('total_dist', 0, type=int)
-  print(td)
-  #FIXME: These probably aren't the right open and close times
   open_time = acp_times.open_time(km, td, tm.isoformat)
   close_time = acp_times.close_time(km, td, tm.isoformat)
   result={ "open": open_time, "close": close_time }
@@ -93,14 +88,4 @@ else:
     # one instance for concurrent service.
     #FIXME:  Debug cgi interface 
     app.debug=False
-
-
-
-
-
-
-
-
-
-
 
