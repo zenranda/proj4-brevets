@@ -68,6 +68,7 @@ def _calc_times():
   hs = request.args.get('begin_time', 0, type=str)
   print(hs)
   tm = arrow.get(tm + ' ' + hs, 'YYYY-MM-DD HH:mm')
+  #tm = tm.to('local')
   print(tm)
   td = request.args.get('total_dist', 0, type=int)
   print(td)

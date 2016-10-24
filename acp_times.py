@@ -34,21 +34,33 @@ def open_time( control_dist_km, brevet_dist_km, brevet_start_time ):
     #perhaps a bunch of mod ops, where days = hours %24, or somethings
     if control_dist_km > brevet_dist_km:	 #error case, if the checkpoint distance is invalid
         return arrow.now().isoformat()           #get better feedback though
+        
+    s = control_dist_km    
+    threshhold = 0
+    hours = 0
+    vals = [[34, 200],[32, 200], [30, 200], [28, 400], [26, 300]]
 
-    opT = [range(1,200), range(200,400), range(400, 600), range(600, 1000), range(1000,1300)]
-    speedVals = [34,32,30,28,26]
-    max_speed = 0    
+    while s > 0:
+        if s > vals[threshhold][1]:     # is this the right reference?
+            s -= vals[threshhold][1]
+            hours += vals[threshhold][1]/(vals[threshhold][0])
+            threshhold += 1
+        else:
+            hours += s/(vals[threshhold][0])
+            s = 0
 
-    for item in opT:
-        if control_dist_km in item:
-            max_speed = speedVals[opT.index(item)]
-    print("max speed is " + str(max_speed))
-    print(brevet_start_time())
-
-    open_time = control_dist_km // max_speed
+    mins = hours * 60
+    hrs = 0
+    while mins >= 60:
+        hrs += 1
+        mins = mins - 60
+    mins = mins // 1
+    
     print("Thus the checkpoint opens in " + str(open_time) + " hours")
     start_time = arrow.get(brevet_start_time())
-    start_time = start_time.replace(hour=+open_time)
+    start_time = start_time.replace(hours=+hrs)
+    start_time = start_time.replace(minutes=+mins)
+    start_time = start_time.replace(hours=+8)
 
     print("Start time is: " + str(start_time))
 
@@ -74,18 +86,33 @@ def close_time( control_dist_km, brevet_dist_km, brevet_start_time ):
 
     cloT = [range(1,600), range(600, 1000), range(1000,1300)]
     speedVals = [15, 11.428, 13.333]
-    min_speed = 0    
+    s = control_dist_km    
+    threshhold = 0
+    hours = 0
+    vals = [[15, 600],[11.428, 400], [13.333, 300]]
 
-    for item in cloT:
-        if control_dist_km in item:
-            min_speed = speedVals[cloT.index(item)]
+    while s > 0:
+        if s > vals[threshhold][1]:
+            s -= vals[threshhold][1]
+            hours += vals[threshhold][1]/(vals[threshhold][0])
+            threshhold += 1
+        else:
+            hours += s/(vals[threshhold][0])
+            s = 0
 
-    close_time = control_dist_km // min_speed
-    end_time = arrow.get(brevet_start_time()).replace(hour=+close_time)
+    mins = hours * 60
+    hrs = 0
+    while mins >= 60:
+        hrs += 1
+        mins = mins - 60
+    mins = mins // 1
+    end_time = arrow.get(brevet_start_time())
+    end_time = end_time.replace(hours=+hrs)
+    end_time = end_time.replace(minutes=+mins)
+    end_time = end_time.replace(hours=+8)
 
 
     return end_time.isoformat()
-
 
 
 
