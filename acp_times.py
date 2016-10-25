@@ -34,7 +34,7 @@ def open_time( control_dist_km, brevet_dist_km, brevet_start_time ):
         print("Error: controle distance > brevet distance + 20%.")  #this clause comes from the official time calculator
         return None
 
-    if brevet_dist_km < control_dist_km < (brevet_dist_km *1.2):    #controles a little past the overall distance are counted as being on that distance
+    if brevet_dist_km < control_dist_km <= (brevet_dist_km *1.2):    #controles a little past the overall distance are counted as being on that distance
         control_dist_km = brevet_dist_km
 
     if control_dist_km < 0:
@@ -85,7 +85,7 @@ def close_time( control_dist_km, brevet_dist_km, brevet_start_time ):
     if control_dist_km > (brevet_dist_km * 1.2):	                #error case, if the checkpoint distance is too far
         return None
 
-    if brevet_dist_km < control_dist_km < (brevet_dist_km *1.2):
+    if brevet_dist_km < control_dist_km <= (brevet_dist_km *1.2):
         control_dist_km = brevet_dist_km
 
     if control_dist_km < 0:
