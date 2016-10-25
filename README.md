@@ -42,3 +42,9 @@ Once the program is running, enter
 HOST:PORT
 ```
 into an internet browser, where HOST matches the IP address of the host computer and PORT matches the port the server is running on (default 5000). Note that there are various dependancies that will likely require executing the configure script first.
+
+Contains automated tests via nose: in the program directory, enter
+```
+nosetests tests_brevet
+```
+after configure to perform the tests.
